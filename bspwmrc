@@ -2,8 +2,9 @@
 
 pgrep -x sxhkd > /dev/null || sxhkd &
 
-# bspc monitor eDP -d 1 2 3 4 5
-# bspc monitor HDMI-A-0 -d 6 7 8 9 10
+bg_image=~/.wallpaper/wall2.png
+
+polybar-msg cmd quit
 
 INTERNAL_MONITOR="eDP"
 EXTERNAL_MONITOR="HDMI-A-0"
@@ -44,11 +45,14 @@ if [[ $(xrandr -q | grep "${EXTERNAL_MONITOR} connected") ]]; then
     if [[ $(bspc query -D -m "${EXTERNAL_MONITOR}" | wc -l) -ne 5 ]]; then
         monitor_add
     fi
+    polybar primary &
+    polybar secondary &
 else
     xrandr --output "$INTERNAL_MONITOR" --primary --mode 1920x1080 --rotate normal --output "$EXTERNAL_MONITOR" --off
     if [[ $(bspc query -D -m "${INTERNAL_MONITOR}" | wc -l) -ne 10 ]]; then
         monitor_remove
     fi
+    polybar primary &
 fi
 
 
@@ -68,9 +72,6 @@ bspc rule -a Screenkey manage=off
 xsetroot -cursor_name left_ptr
 picom -b
 
-bg_image=~/.wallpaper/wall2.png
-
-nitrogen --set-auto $bg_image &
 wal -i $bg_image
 . "$HOME/.cache/wal/colors.sh"
 
@@ -81,5 +82,6 @@ bspc config presel_feedback_color "$color1"
 
 xinput set-prop 12 296 1
 
-polybar-msg cmd quit &
-polybar &
+feh --no-fehbg --bg-scale $bg_image
+
+# polybar &
